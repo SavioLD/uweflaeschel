@@ -30,5 +30,5 @@ img/               Porträts von Uwe (uwe-*), KI-Symbolbilder (wieds-*, grander-
 ## Offen vor Go-live
 
 - Impressum: USt-ID, Registereintrag, Berufshaftpflicht (falls vorhanden) – als TODO im HTML markiert. Bildnachweis: Fotograf/in der Porträts ergänzen und klären, ob die Referenzkunden der Logo-Nutzung zugestimmt haben.
-- Datenschutz: Hoster konkret benennen (TODO im HTML).
+- Datenschutz: Hosting-Abschnitt nennt GitHub Pages – bei Umzug auf anderen Hoster anpassen.
 - Anfrageformular öffnet aktuell das E-Mail-Programm (mailto). Für Direktversand z. B. Web3Forms anbinden.
