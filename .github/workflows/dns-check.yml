@@ -1,0 +1,23 @@
+# Temporär: zeigt DNS-/Whois-Daten von uwe-flaeschel.de im Log. Branch wird danach gelöscht.
+name: DNS-Check uwe-flaeschel.de
+on:
+  push:
+    branches: [dns-check]
+jobs:
+  dns:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS & Whois
+        run: |
+          sudo apt-get install -y -qq whois >/dev/null 2>&1 || true
+          D=uwe-flaeschel.de
+          echo "=== NS ==="; dig +short NS $D
+          echo "=== SOA ==="; dig +short SOA $D
+          echo "=== A ==="; dig +short A $D
+          echo "=== AAAA ==="; dig +short AAAA $D
+          echo "=== www ==="; dig +short www.$D
+          echo "=== MX ==="; dig +short MX $D
+          echo "=== TXT ==="; dig +short TXT $D
+          echo "=== DENIC whois ==="; whois -h whois.denic.de "-T dn $D" 2>&1 | grep -Ev '^%|^$' | head -40 || true
+          for ip in $(dig +short A $D); do echo "=== IP $ip ==="; dig +short -x $ip; whois $ip 2>/dev/null | grep -Ei '^(orgname|org-name|netname|descr|country|organization)' | head -8; done
+          echo "=== HTTP ==="; curl -sSI -m 15 https://$D | grep -Ei '^(server|via|x-|location)' || true
