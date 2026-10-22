@@ -27,6 +27,81 @@
     });
   }
 
+  /* ---------------------------------------------------------------- Kopfzeile beim Scrollen + Schnellkontakt */
+  var actionbar = document.querySelector(".actionbar");
+  var contact = document.getElementById("kontakt");
+  var contactInView = false;
+  var onScroll = function () {
+    var y = window.scrollY;
+    if (topbar) topbar.classList.toggle("is-scrolled", y > 40);
+    if (actionbar) actionbar.classList.toggle("is-visible", y > window.innerHeight * 0.6 && !contactInView);
+  };
+  if (contact && actionbar && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      contactInView = entries[0].isIntersecting;
+      onScroll();
+    }, { threshold: 0.15 }).observe(contact);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---------------------------------------------------------------- Tabs (Einsatzbereiche) */
+  document.querySelectorAll("[data-tabs]").forEach(function (wrap) {
+    var tabs = Array.prototype.slice.call(wrap.querySelectorAll("[role=tab]"));
+    var select = function (tab, focus) {
+      tabs.forEach(function (t) {
+        var on = t === tab;
+        var panel = document.getElementById(t.getAttribute("aria-controls"));
+        t.setAttribute("aria-selected", String(on));
+        t.tabIndex = on ? 0 : -1;
+        if (panel) {
+          panel.hidden = !on;
+          panel.classList.toggle("is-shown", on);
+        }
+      });
+      if (focus) tab.focus();
+      // auf dem Handy den aktiven Reiter in die horizontale Leiste holen
+      var list = tab.parentElement;
+      if (list.scrollWidth > list.clientWidth) {
+        list.scrollTo({ left: tab.offsetLeft - 16, behavior: reduceMotion ? "auto" : "smooth" });
+      }
+    };
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener("click", function () { select(tab, false); });
+      tab.addEventListener("keydown", function (e) {
+        var next = null;
+        if (e.key === "ArrowRight") next = tabs[(i + 1) % tabs.length];
+        if (e.key === "ArrowLeft") next = tabs[(i - 1 + tabs.length) % tabs.length];
+        if (e.key === "Home") next = tabs[0];
+        if (e.key === "End") next = tabs[tabs.length - 1];
+        if (next) { e.preventDefault(); select(next, true); }
+      });
+    });
+    var current = tabs.filter(function (t) { return t.getAttribute("aria-selected") === "true"; })[0] || tabs[0];
+    if (current) select(current, false);
+  });
+
+  /* ---------------------------------------------------------------- Karussell (Kundenstimmen) */
+  document.querySelectorAll(".g-track").forEach(function (track) {
+    var section = track.closest("section");
+    var prev = section && section.querySelector(".g-voices__prev");
+    var next = section && section.querySelector(".g-voices__next");
+    if (!prev || !next) return;
+    var step = function () {
+      var card = track.querySelector(".g-voice");
+      return card ? card.getBoundingClientRect().width + 20 : track.clientWidth * 0.8;
+    };
+    var update = function () {
+      prev.disabled = track.scrollLeft <= 4;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 4;
+    };
+    prev.addEventListener("click", function () { track.scrollBy({ left: -step(), behavior: reduceMotion ? "auto" : "smooth" }); });
+    next.addEventListener("click", function () { track.scrollBy({ left: step(), behavior: reduceMotion ? "auto" : "smooth" }); });
+    track.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+  });
+
   /* ---------------------------------------------------------------- Markenwechsel */
   // Alle Links zur jeweils anderen Marke (Switch oben + Markenkarten) lassen den
   // Switch-Regler zuerst hinübergleiten und wechseln dann die Seite.
