@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://uwe-flaeschel.de/sitemap.xml
+Sitemap: https://uwe-flaeschel.com/sitemap.xml

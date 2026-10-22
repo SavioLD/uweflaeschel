@@ -1,6 +1,6 @@
 # Uwe Fläschel · Handelsvertretung
 
-Live unter **https://uwe-flaeschel.de** (GitHub Pages, Domain über `CNAME`). Statische Website, kein Build nötig. Lokal ansehen:
+Live unter **https://uwe-flaeschel.com** (GitHub Pages, Domain über `CNAME`). Statische Website, kein Build nötig. Lokal ansehen:
 
 ```bash
 python3 -m http.server 8000   # → http://localhost:8000
