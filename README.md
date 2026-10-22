@@ -1,6 +1,6 @@
 # Uwe Fläschel · Handelsvertretung
 
-Statische Website, kein Build nötig. Lokal ansehen:
+Live unter **https://uwe-flaeschel.de** (GitHub Pages, Domain über `CNAME`). Statische Website, kein Build nötig. Lokal ansehen:
 
 ```bash
 python3 -m http.server 8000   # → http://localhost:8000
@@ -13,6 +13,7 @@ python3 -m http.server 8000   # → http://localhost:8000
 | `index.html` | **Wieds** (Hauptseite) – Betriebshygiene, Kühlschmierstoffe, Reinigung, Fahrzeugpflege |
 | `granderwasser.html` | **Granderwasser** – eigenes Layout & Design (Serifenschrift, Wellen, Tiefblau/Sand) |
 | `impressum.html`, `datenschutz.html` | Rechtstexte (gemeinsam für beide Marken) |
+| `404.html` | Fehlerseite (fängt auch alte OnePage-Links ab) |
 
 Zwischen den Marken wechselt man über den **Marken-Switch** oben rechts (animierter Seitenwechsel per View Transitions), über die Markenkarten weiter unten und über den Footer.
 
