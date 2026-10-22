@@ -1,23 +1,22 @@
-# Temporär: zeigt DNS-/Whois-Daten von uwe-flaeschel.de im Log. Branch wird danach gelöscht.
-name: DNS-Check uwe-flaeschel.de
+# Temporär: prüft DNS, HTTPS und Inhalt von uwe-flaeschel.com. Branch kann gelöscht werden.
+name: Live-Check uwe-flaeschel.com
 on:
   push:
     branches: [dns-check]
 jobs:
-  dns:
+  check:
     runs-on: ubuntu-latest
     steps:
-      - name: DNS & Whois
+      - name: DNS, HTTPS, Inhalt
         run: |
-          sudo apt-get install -y -qq whois >/dev/null 2>&1 || true
-          D=uwe-flaeschel.de
-          echo "=== NS ==="; dig +short NS $D
-          echo "=== SOA ==="; dig +short SOA $D
-          echo "=== A ==="; dig +short A $D
-          echo "=== AAAA ==="; dig +short AAAA $D
-          echo "=== www ==="; dig +short www.$D
+          D=uwe-flaeschel.com
+          echo "=== A $D ==="; dig +short A $D
+          echo "=== www.$D ==="; dig +short www.$D
           echo "=== MX ==="; dig +short MX $D
-          echo "=== TXT ==="; dig +short TXT $D
-          echo "=== DENIC whois ==="; whois -h whois.denic.de "-T dn $D" 2>&1 | grep -Ev '^%|^$' | head -40 || true
-          for ip in $(dig +short A $D); do echo "=== IP $ip ==="; dig +short -x $ip; whois $ip 2>/dev/null | grep -Ei '^(orgname|org-name|netname|descr|country|organization)' | head -8; done
-          echo "=== HTTP ==="; curl -sSI -m 15 https://$D | grep -Ei '^(server|via|x-|location)' || true
+          for u in http://$D https://$D https://www.$D https://$D/granderwasser.html https://$D/img/wieds-cnc.jpg https://$D/gibtsnicht; do
+            printf '%-45s ' "$u"; curl -s -o /dev/null -m 20 -w '%{http_code} -> %{redirect_url}\n' "$u" || echo "FEHLER"
+          done
+          echo "=== Titel Startseite ==="; curl -sL -m 20 https://$D | grep -o '<title>[^<]*' || echo "kein Titel / HTTPS-Fehler"
+          echo "=== Titel Grander ==="; curl -sL -m 20 https://$D/granderwasser.html | grep -o '<title>[^<]*' || true
+          echo "=== Zertifikat ==="; echo | openssl s_client -connect $D:443 -servername $D 2>/dev/null | openssl x509 -noout -subject -issuer -enddate 2>/dev/null || echo "kein Zertifikat"
+          echo "=== uwe-flaeschel.de (alt) ==="; dig +short A uwe-flaeschel.de; curl -sL -m 20 https://uwe-flaeschel.de | grep -o '<title>[^<]*' || true
